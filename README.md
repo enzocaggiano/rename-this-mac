@@ -5,31 +5,66 @@ It comes as one zsh file with a Terminal command and a native macOS window.
 
 <img src="window-preview.png" alt="The Rename this Mac window, showing a name field and a live preview of all four names" width="420">
 
-## Download the app
+## Installation
 
-**[Download Rename this Mac (DMG)](https://github.com/enzocaggiano/rename-this-mac/releases/latest/download/Rename-this-Mac.dmg)**
+**Requirements**
 
-1. Open the DMG and drag **Rename this Mac** onto **Applications**.
-2. Open **Rename this Mac** from your Applications folder.
-3. If macOS says it can't verify the app, open System Settings → Privacy & Security, scroll down, and click **Open Anyway**.
-    - This happens only once, because the app isn't notarized by Apple.
-4. On first launch, choose whether to also add the `rename-mac` command for Terminal.
+- A Mac running macOS (tested on macOS 27).
+- An administrator account, because renaming a Mac needs your password.
+
+### Option 1: the app (easiest)
+
+1. **[Download Rename this Mac (DMG)](https://github.com/enzocaggiano/rename-this-mac/releases/latest/download/Rename-this-Mac.dmg)**.
+2. Double-click **Rename-this-Mac.dmg** in your Downloads folder to open it.
+3. Drag **Rename this Mac** onto the **Applications** folder in that window.
+4. Eject the **Rename this Mac** disk from Finder's sidebar.
+5. Open **Rename this Mac** from your Applications folder (or search for it in Spotlight with ⌘ Space).
+6. If macOS says it can't verify the app, click **Done**, then allow it once:
+    - Open System Settings → **Privacy & Security**.
+    - Scroll down to **Security** and click **Open Anyway** next to "Rename this Mac".
+    - Enter your Mac password, then click **Open Anyway** again.
+    - This happens only the first time, because the app isn't notarized by Apple.
+7. On first launch, choose **Add command** if you also want the `rename-mac` Terminal command, or **Not now** to skip it.
 
 <img src="dmg-window.jpg" alt="The installer window: the Rename this Mac app, an arrow, and the Applications folder" width="480">
 
-## Install with Terminal instead
+### Option 2: the Terminal command
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/enzocaggiano/rename-this-mac/main/rename-mac.command -o rename-mac.command
-zsh rename-mac.command --install
-```
+1. Open Terminal (⌘ Space, type `Terminal`, press Return).
+2. Download the script:
 
-- Answer `y` when the installer offers to update `~/.zshrc`.
-- Open a new Terminal window, then run `rename-mac --show` to see your current names.
-- Run `rename-mac --dry-run "Sam's Mac mini"` to preview a rename without changing anything.
-- Run `rename-mac "Sam's Mac mini"` to rename for real.
-    - It asks for your Mac password once.
-- Or search Spotlight for **Rename this Mac** to use the window.
+    ```bash
+    curl -fsSL https://raw.githubusercontent.com/enzocaggiano/rename-this-mac/main/rename-mac.command -o rename-mac.command
+    ```
+
+3. Install it:
+
+    ```bash
+    zsh rename-mac.command --install
+    ```
+
+4. Type `y` when it offers to update `~/.zshrc`.
+5. Open a new Terminal window so the command is ready.
+
+This also adds the **Rename this Mac** app to `~/Applications`, so you get both.
+
+### Check that it worked
+
+- **App:** open **Rename this Mac** and type a name, and all four rows should show a green ✓.
+- **Terminal:** run `rename-mac --show` to see your Mac's current names.
+- **Safe test:** run `rename-mac --dry-run "Sam's Mac mini"` to preview a rename without changing anything.
+
+### Update to a new version
+
+- **App:** download the newest DMG and drag the app onto **Applications** again, choosing **Replace**.
+- **Terminal:** repeat Option 2.
+
+### Uninstall
+
+- **App:** drag **Rename this Mac** from Applications to the Trash.
+- **Terminal command:** run `rename-mac --uninstall`.
+    - This removes the command, its app, Tab completion, and the lines it added to `~/.zshrc`.
+    - It keeps your history, inventory log, and presets in `~/.rename-mac`, which you can delete yourself.
 
 ## Why this exists
 
@@ -116,7 +151,7 @@ studio.local,Studio
 - **Notification:** a macOS notification confirms each rename.
     - Turn it off with `--quiet`.
 
-## Install details
+## What the Terminal install adds
 
 `--install` adds three things.
 
@@ -125,15 +160,6 @@ studio.local,Studio
 - **Tab completion:** for zsh, in `~/.rename-mac/completions`.
 
 To add it to the menu bar, make a Shortcut with **Open App → Rename this Mac** and turn on **Pin in Menu Bar**.
-
-## Uninstall
-
-```bash
-rename-mac --uninstall
-```
-
-- This removes the command, the app, Tab completion, and the lines it added to `~/.zshrc`.
-- It keeps your history, inventory log, and presets in `~/.rename-mac`.
 
 ## Known limits
 
