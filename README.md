@@ -17,13 +17,19 @@ It comes as one zsh file with a Terminal command and a native macOS window.
 1. **[Download Rename this Mac (DMG)](https://github.com/enzocaggiano/rename-this-mac/releases/latest/download/Rename-this-Mac.dmg)**.
 2. Double-click **Rename-this-Mac.dmg** in your Downloads folder to open it.
 3. Drag **Rename this Mac** onto the **Applications** folder in that window.
-4. Eject the **Rename this Mac** disk from Finder's sidebar.
-5. Open **Rename this Mac** from your Applications folder (or search for it in Spotlight with ⌘ Space).
-6. If macOS says it can't verify the app, click **Done**, then allow it once:
-    - Open System Settings → **Privacy & Security**.
-    - Scroll down to **Security** and click **Open Anyway** next to "Rename this Mac".
+4. Skip the "can't verify" warning by running this once in Terminal:
+
+    ```bash
+    xattr -dr com.apple.quarantine "/Applications/Rename this Mac.app"
+    ```
+
+    - This removes the "downloaded from the internet" flag, so macOS opens the app without asking.
+    - Only do this for apps you trust, because it skips Apple's download check for this app.
+5. Eject the **Rename this Mac** disk from Finder's sidebar.
+6. Open **Rename this Mac** from your Applications folder (or search for it in Spotlight with ⌘ Space).
+    - If you skipped step 4 and macOS says it can't verify the app, click **Done**.
+    - Then open System Settings → **Privacy & Security**, scroll to **Security**, and click **Open Anyway**.
     - Enter your Mac password, then click **Open Anyway** again.
-    - This happens only the first time, because the app isn't notarized by Apple.
 7. On first launch, choose **Add command** if you also want the `rename-mac` Terminal command, or **Not now** to skip it.
 
 <img src="dmg-window.jpg" alt="The installer window: the Rename this Mac app, an arrow, and the Applications folder" width="480">
@@ -57,6 +63,7 @@ This also adds the **Rename this Mac** app to `~/Applications`, so you get both.
 ### Update to a new version
 
 - **App:** download the newest DMG and drag the app onto **Applications** again, choosing **Replace**.
+    - Run the `xattr` command from step 4 again, because every new download gets the flag back.
 - **Terminal:** repeat Option 2.
 
 ### Uninstall
@@ -166,7 +173,7 @@ To add it to the menu bar, make a Shortcut with **Open App → Rename this Mac**
 - Some macOS versions block writing the Windows sharing name.
     - When that happens, `rename-mac` says "3 of 4 names changed" and shows the manual fix.
     - The manual fix is System Settings → Network → your connection → Details → WINS → NetBIOS Name.
-- The app isn't notarized, so macOS asks you to click **Open Anyway** the first time.
+- The app isn't notarized, so macOS blocks the first launch unless you run the `xattr` command or click **Open Anyway**.
 - Shortcuts can't be created by a script, so pinning to the menu bar is a manual step.
 - It has been tested on macOS 27 only.
 
