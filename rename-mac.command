@@ -22,7 +22,7 @@ RM_UNSET=__UNSET__
 RM_MAX_SMB=15
 
 # Options (set by rm_parse_args)
-typeset -g RM_DRY=0 RM_YES=0 RM_GUI=0 RM_QUIET=0 RM_CLASH=1 RM_REPORT=0 RM_LOG=0
+typeset -g RM_CLI_ONLY=0 RM_DRY=0 RM_YES=0 RM_GUI=0 RM_QUIET=0 RM_CLASH=1 RM_REPORT=0 RM_LOG=0
 typeset -g RM_LOG_FILE="" RM_PRESET="" RM_PRESET_N="" RM_TEMPLATE=""
 typeset -g RM_ACTION=rename RM_NAME="" RM_HOST="" RM_BATCH=""
 typeset -ga RM_FORWARD
@@ -760,6 +760,7 @@ _arguments -s \
   '--no-clash-check[skip the network name check]' \
   '(-q --quiet)'{-q,--quiet}'[no notification or sound]' \
   '--install[install the command, app, and Tab completion]' \
+  '--install-cli[install only the command and Tab completion]' \
   '--uninstall[remove what --install added]' \
   '(-h --help)'{-h,--help}'[show help]' \
   '--version[show the version]' \
@@ -780,11 +781,14 @@ rm_install() {
   print -r -- "$RM_COMPLETION" > "$RM_HOME/completions/_rename-mac"
   rm_ok "Tab completion: $RM_HOME/completions/_rename-mac"
 
-  rm -rf "${RM_APP:?}"
-  osacompile -o "$RM_APP" -e "try
-  do shell script quoted form of \"$dir/rename-mac\" & \" --gui\"
-end try" >/dev/null 2>&1 && rm_ok "App: $RM_APP (find it in Spotlight as \"Rename this Mac\")" \
-    || rm_warn "Couldn't build the Rename this Mac app."
+  if (( ! RM_CLI_ONLY )); then
+    rm -rf "${RM_APP:?}"
+    osacompile -o "$RM_APP" -e "try
+    do shell script quoted form of \"$dir/rename-mac\" & \" --gui\"
+  end try" >/dev/null 2>&1 && rm_ok "App: $RM_APP (find it in Spotlight as \"Rename this Mac\")" \
+      || rm_warn "Couldn't build the Rename this Mac app."
+
+  fi
 
   local -a block=("$RM_ZSHRC_BEGIN")
   [[ ":$PATH:" == *":$dir:"* ]] || block+=("export PATH=\"$dir:\$PATH\"")
@@ -806,6 +810,7 @@ end try" >/dev/null 2>&1 && rm_ok "App: $RM_APP (find it in Spotlight as \"Renam
     fi
   fi
 
+  (( RM_CLI_ONLY )) && { rm_say "Try it in a new Terminal window: rename-mac --show"; return 0 }
   print -r -- ""
   rm_say "${C_B}Optional:${C_X} to add it to the menu bar or Siri, open Shortcuts, make a shortcut with \"Open App → Rename this Mac\", and turn on \"Pin in Menu Bar\"."
   rm_say "Try it: rename-mac --show"
@@ -863,6 +868,7 @@ ${C_B}Options${C_X}
                        (default ~/.rename-mac/inventory.csv)
   --no-clash-check     skip the check for another device using the name
   --install            add the command, the "Rename this Mac" app, and Tab completion
+  --install-cli        add only the command and Tab completion
   --uninstall          remove them (keeps your history)
 
 Names: the Finder name keeps spaces, and the other three use hyphens.
@@ -887,6 +893,7 @@ rm_parse_args() {
       --report)        RM_REPORT=1 ;;
       --no-clash-check) RM_CLASH=0 ;;
       --install)       RM_ACTION=install ;;
+      --install-cli)   RM_ACTION=install; RM_CLI_ONLY=1 ;;
       --uninstall)     RM_ACTION=uninstall ;;
       --preset)        shift; RM_PRESET=${1:?--preset needs a name}
                        if [[ ${2:-} == <-> ]]; then RM_PRESET_N=$2; shift; fi ;;

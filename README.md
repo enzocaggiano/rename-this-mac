@@ -5,7 +5,19 @@ It comes as one zsh file with a Terminal command and a native macOS window.
 
 <img src="window-preview.png" alt="The Rename this Mac window, showing a name field and a live preview of all four names" width="420">
 
-## Quick start
+## Download the app
+
+**[Download Rename this Mac (DMG)](https://github.com/enzocaggiano/rename-this-mac/releases/latest/download/Rename-this-Mac.dmg)**
+
+1. Open the DMG and drag **Rename this Mac** onto **Applications**.
+2. Open **Rename this Mac** from your Applications folder.
+3. If macOS says it can't verify the app, open System Settings → Privacy & Security, scroll down, and click **Open Anyway**.
+    - This happens only once, because the app isn't notarized by Apple.
+4. On first launch, choose whether to also add the `rename-mac` command for Terminal.
+
+<img src="dmg-window.jpg" alt="The installer window: the Rename this Mac app, an arrow, and the Applications folder" width="480">
+
+## Install with Terminal instead
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/enzocaggiano/rename-this-mac/main/rename-mac.command -o rename-mac.command
@@ -128,8 +140,18 @@ rename-mac --uninstall
 - Some macOS versions block writing the Windows sharing name.
     - When that happens, `rename-mac` says "3 of 4 names changed" and shows the manual fix.
     - The manual fix is System Settings → Network → your connection → Details → WINS → NetBIOS Name.
+- The app isn't notarized, so macOS asks you to click **Open Anyway** the first time.
 - Shortcuts can't be created by a script, so pinning to the menu bar is a manual step.
 - It has been tested on macOS 27 only.
+
+## Build the DMG yourself
+
+```bash
+zsh build-dmg.sh
+```
+
+- This draws the icon, builds the app with the script inside, and writes `dist/Rename-this-Mac.dmg`.
+- macOS asks once whether Terminal may control Finder, which lays out the installer window.
 
 ## Run the tests
 
